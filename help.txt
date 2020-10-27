@@ -42,8 +42,15 @@ Configurations Steps:
       },
     //to run this script, execute "npm start"
 
-11) Install Knex.js / SQL query builder
+11) Installing Knex.js / SQL query builder
 > npm install knex --save
 
-12) Install sqlite3 / DB
+12) Installing sqlite3 / DB
 > npm install sqlite3
+
+13) Executing Knex Migrations to create database
+> npx knex --knexfile knexfile.ts migrate:latest
+
+14) Install "SQLite" Extension on VSCode
+
+
