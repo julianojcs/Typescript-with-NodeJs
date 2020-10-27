@@ -1,0 +1,45 @@
+Configurations Steps:
+
+1)Git initializing
+> git init
+
+2) NPM initializing
+> npm init -y
+
+3) Typescript installation
+> npm install typescript -D
+
+4) Express installation
+> npm install express
+
+5) Installing declaration file for module 'express'
+> npm install @types/express
+
+6) Criando tsconfig.json (arquivo de configuração do Typescript)
+> npx tsc --init
+    Edit tsconfig.json and enable the lines bellow:
+    "outDir": "./dist",   /* Redirect output structure to the directory. */    
+    "rootDir": "./src",      /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+
+7) Compile project:
+> npx tsc
+
+8) Run project:
+> node dist/server.js
+
+9) Live Build and Load
+> npm install ts-node-dev -D
+
+10) Script config:
+    Edit package.js
+      "scripts": {
+          "dev": "ts-node-dev --inspect --ignore-watch node_modules src/server.ts"
+      },
+    //to run this script, execute "npm run dev"
+    //or
+      "scripts": {
+          "start": "ts-node-dev --inspect --ignore-watch node_modules src/server.ts"
+      },
+    //to run this script, execute "npm start"
+
+11) 
