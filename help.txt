@@ -49,8 +49,15 @@ Configurations Steps:
 > npm install sqlite3
 
 13) Executing Knex Migrations to create database
-> npx knex --knexfile knexfile.ts migrate:latest
+> npx knex --knexfile knexfile.ts migrate:
 
-14) Install "SQLite" Extension on VSCode
+14) Creating mew Script to run knex migrations:
+    Edit package.js
+    "scripts": {
+        "dev": "ts-node-dev --inspect --ignore-watch node_modules src/server.ts",
+        "knex:migrate": "knex --knexfile knexfile.ts migrate:latest"
+    },
+
+15) Install "SQLite" Extension on VSCode
 
 
