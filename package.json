@@ -1,0 +1,21 @@
+{
+  "name": "typescript-with-nodejs",
+  "version": "1.0.0",
+  "description": "Typescript with NodeJs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node.js",
+    "typescript"
+  ],
+  "author": "Juliano Costa Silva",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.0.5"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
