@@ -42,4 +42,8 @@ Configurations Steps:
       },
     //to run this script, execute "npm start"
 
-11) 
+11) Install Knex.js / SQL query builder
+> npm install knex --save
+
+12) Install sqlite3 / DB
+> npm install sqlite3
