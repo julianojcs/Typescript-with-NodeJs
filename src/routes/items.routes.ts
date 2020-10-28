@@ -6,7 +6,7 @@ const itemsRouter: Router = Router()
 
 itemsRouter.get('/', async (request, response) => {
     const items = await knes('items').select('*')
-    const serializedItems = items.map(item => {
+    const serializedItems = items.map((item: any) => {
         return {
             id: item.id,
             title: item.title,
