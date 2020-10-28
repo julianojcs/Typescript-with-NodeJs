@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import knex from '../database/connection'
+import { staticUrl } from '../shared'
 
 const locationsRouter: Router = Router()
 
@@ -72,6 +73,44 @@ locationsRouter.post('/', async (request, response) => {
     return response.json({
         id: location_id,
         ...location
+    })
+})
+
+locationsRouter.get('/:id', async (request, response) => {
+    const { id } = request.params
+
+    // const location = await knex('locations').where('id', id).first()
+    const location = await knex('locations').where('id', id).first().timeout(10000)
+
+    if (!location) {
+        return response.status(400).json({ message: `Item ${id} not found!`})
+    }
+
+    // const items = await knex('items')
+    //     .join('location_items', 'items.id', '=', 'location_items.item_id'})
+    //     .where('location_items.location_id', id)
+    //     .select('items.title')
+
+    const items = await knex('items')
+        .join('location_items', {'items.id': 'location_items.item_id'})
+        .where({'location_items.location_id': id})
+        .select('items.*')
+        .timeout(10000)
+        .then((items) => { 
+            console.log(items)
+            return items.map((item: any) => {
+                return {
+                    id: item.id,
+                    title: item.title,
+                    image_url: staticUrl + item.image
+                }
+            })
+        })
+        
+
+    return response.json({
+        ...location,
+        items
     })
 })
 
