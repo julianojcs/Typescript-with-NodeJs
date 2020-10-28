@@ -26,23 +26,51 @@ locationsRouter.post('/', async (request, response) => {
         uf
     }
 
+    const transaction = await knex.transaction();
     // newIds need to be an array of Ids
-    const newIds: Array<number> = await knex('locations').insert(location)
-    const locationId: number = newIds[0]
+    const newIds: Array<number> = await transaction('locations').insert(location)
+    const location_id: number = newIds[0]
 
     if (items?.length) { // Same as: if(items && items.length) {
+        let itemNotFound: number|undefined = undefined
+
+        const itemsBd = await transaction('items').select('id')
+
+        const itemsIdBd: Array<number> = itemsBd.map(item => {
+            return item.id
+        })
+        
+        items.forEach((item: number) => {
+            if(!itemsIdBd.includes(item)) {
+                itemNotFound = item
+            }
+        })
+        
+        if (itemNotFound) {
+            transaction.rollback()
+            return response.status(400).json({ message: `Item ${itemNotFound} not found!`})
+        }
+
         const locationItems = items.map((item_id: number) => {
+        // const locationItems = items.map(async (item_id: number) => {
+            // const selectedItem = await transaction('items').where('id', item_id).first()
+            // if (!selectedItem) {
+            //     return response.status(400).json({ message: `Item ${item_id} not itemNotFound!`})
+            // }
+
             return {
                 item_id,
-                location_id: locationId
+                location_id
             }
         })
 
-        await knex('location_items').insert(locationItems)
+        await transaction('location_items').insert(locationItems)
     }
 
+    await transaction.commit();
+
     return response.json({
-        id: locationId,
+        id: location_id,
         ...location
     })
 })
@@ -82,21 +110,24 @@ locationsRouter.post('/', async (request, response) => {
             // newIds need to be an array of Ids
             const newIds: Array<number> = await trx('locations').insert(location).transacting(trx)
 
-            const locationId: number = newIds[0]
+            const location_id: number = newIds[0]
 
-            const locationItems = items.map((item_id: number) => {
-                return {
-                    item_id,
-                    location_id: locationId
-                }
-            })
+            if (items?.length) {
+                const locationItems = items.map((item_id: number) => {
+                    return {
+                        item_id,
+                        location_id
+                    }
+                })
 
-            await trx('location_items').insert(locationItems).transacting(trx)
+                await trx('location_items').insert(locationItems).transacting(trx)
+                console.log(locationItems.length + ' new locationItems created.')
+            }
+
             console.log('1 new location created with id = ' + newIds)
-            console.log(locationItems.length + ' new locationItems created.')
 
             return response.json({
-                id: locationId,
+                id: location_id,
                 ...location
             })
         })
