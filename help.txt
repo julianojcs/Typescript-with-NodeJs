@@ -67,3 +67,11 @@ Configurations Steps:
         "knex:migrate": "knex --knexfile knexfile.ts migrate:latest",
         "knex:seed": "knex --knexfile knexfile.ts seed:run"
     },
+
+17) Installing cors
+> npm install cors
+
+18) Installing Multer - Images upload
+> npm install multer
+> npm install @types/multer -D
+

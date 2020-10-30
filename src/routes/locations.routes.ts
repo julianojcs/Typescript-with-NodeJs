@@ -1,8 +1,11 @@
 import { Router } from 'express'
+import multer from 'multer'
 import knex from '../database/connection'
+import multerConfig from '../config/multer'
 import { staticUrl } from '../shared'
 
 const locationsRouter: Router = Router()
+const upload = multer(multerConfig)
 
 locationsRouter.post('/', async (request, response) => {
     const {
@@ -129,6 +132,26 @@ locationsRouter.get('/', async (request, response) => {
 
     return response.json(location)
 
+})
+
+locationsRouter.put('/:id', upload.single('image'), async (request, response) => {
+    const { id } = request.params
+    const image: string = request.file.filename
+    const location: any = await knex('locations').where('id', id).first().select('id').timeout(10000)
+
+    if (!location) {
+        return response.status(400).json({ message: `Location ${id} not found!`})
+    }
+
+    // const locationUpdated = {
+    //     ...location,
+    //     image
+    // }
+    const locationUpdated = { image }
+
+    await knex('locations').update(locationUpdated).where('id', id)
+
+    return response.json(locationUpdated.image)
 })
 
 export default locationsRouter
