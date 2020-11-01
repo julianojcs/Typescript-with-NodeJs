@@ -120,24 +120,35 @@ locationsRouter.get('/:id', async (request, response) => {
 locationsRouter.get('/', async (request, response) => {
     const { city, uf, items } = request.query
 
-    if (city && uf && items) {
-        const parsedItems: Number[] = String(items).split(',').map(item => Number(item.trim()))
+    const parsedItems: Number[] = String(items).split(',').map(item => Number(item.trim()))
 
-        const locations = await knex('locations')
-            .join('location_items', 'locations.id', '=', 'location_items.location_id')
-            .whereIn('location_items.item_id', parsedItems)
-            .where('city', String(city))
-            .where('uf', String(uf))
-            .distinct()
-            .select('locations.*')
+    const locations = await knex('locations')
+    .join('location_items', 'locations.id', '=', 'location_items.location_id')
+    .where(function() {
+        if (items){    
+            this.whereIn('location_items.item_id', parsedItems)
+        }
+    })
+    .where(function() {
+        if (city && uf) {
+            this.where({
+                city: String(city),
+                uf:  String(uf)
+            })
+        } else if (city && !uf) {
+            this.where({city: String(city)})
+        } else if (!city && uf) {
+            this.where({uf: String(uf)})
+        }
+    })
+    .distinct().debug(true)
+    .select('locations.*')
 
-            return response.json(locations)
-    } else {
-        const locations = await knex('locations').select('*')
-
-        return response.json(locations)
-    }
+    return response.json(locations)
 })
+
+
+
 
 locationsRouter.put('/:id', upload.single('image'), async (request, response) => {
     const { id } = request.params
