@@ -75,3 +75,9 @@ Configurations Steps:
 > npm install multer
 > npm install @types/multer -D
 
+19) Installing Celebrate and Joi
+> npm install celebrate
+    Celebrate is an express middleware function that wraps the joi validation library. This allows you to use this middleware in any single route, or globally, and ensure that all of your inputs are correct before any handler function. The middleware allows you to validate req.params, req.headers, and req.query.
+    Celebrate uses Joi -> joi.dev - Schema description language & data validator for JS
+    Obs: I install only Joi, needs to install @hapi/joi:
+        > npm install @hapi/joi

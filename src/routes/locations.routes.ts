@@ -1,13 +1,38 @@
 import { Router } from 'express'
 import multer from 'multer'
+import { celebrate, Joi } from 'celebrate'
 import knex from '../database/connection'
 import multerConfig from '../config/multer'
 import { staticUrl } from '../shared'
 
 const locationsRouter: Router = Router()
 const upload = multer(multerConfig)
+const requestRules = {
+    body: Joi.object().keys({
+        name: Joi.string().required(),
+        email: Joi.string().required().email().label('e-mail'), // .label(name): Overrides the key name in error messages.
+        whatsapp: Joi.string().required(),
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required(),
+        city: Joi.string().required(),
+        uf: Joi.string().required().max(2).min(2).messages({
+            'string.base': `"uf" should be a type of 'text'`,
+            'string.empty': `"uf" cannot be an empty field`,
+            'string.min': `"uf" should have a minimum length of {#limit}`,
+            'string.max': `"uf" should have a maximum length of {#limit}`,
+            'any.required': `"uf" is a required field`
+          }),
+        items: Joi.array().items(Joi.number()).required() // .array().items(Joi.number()): fiels are required and needs to be an array, and each items needs to be a number
+    })
+}
+const joiOpts = {
+    abortEarly: false,
+    errors: {
+        escapeHtml: true
+    }
+}
 
-locationsRouter.post('/', async (request, response) => {
+locationsRouter.post('/', celebrate(requestRules, joiOpts), async (request, response) => {
     const {
         name,
         email,
