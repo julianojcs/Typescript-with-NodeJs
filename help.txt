@@ -89,3 +89,6 @@ Configurations Steps:
 21) installation Json Web Token
 > npm i jsonwebtoken
 > npm install @types/jsonwebtoken -D
+
+22) installing  - Gerenciador de Processos
+> npm install pm2@latest -g

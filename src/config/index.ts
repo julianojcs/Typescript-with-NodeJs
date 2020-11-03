@@ -4,6 +4,9 @@ const jwt = {
     EXPIRES_IN: '1d'
 }
 
-const teste = false
+const env = {
+    host: 'http://localhost',
+    port: 3333
+}
 
-export { jwt, teste }
+export { jwt, env }

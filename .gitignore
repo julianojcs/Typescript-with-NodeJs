@@ -6,6 +6,9 @@
 /.pnp
 .pnp.js
 
+# distribution
+/dist
+
 # testing
 /coverage
 
