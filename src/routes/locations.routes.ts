@@ -141,14 +141,31 @@ locationsRouter.get('/', async (request, response) => {
             this.where({uf: String(uf)})
         }
     })
-    .distinct().debug(true)
+    .distinct()
+    .debug(true)
     .select('locations.*')
+    .then((locations) => { 
+        return locations.map( async (location: any) => {
+            const items = await knex('items')
+            .join('location_items', {'items.id': 'location_items.item_id'})
+            .where({'location_items.location_id': location.id})
+            .select('items.*')
+            .then((items) => { 
+                return items.map((item: any) => {
+                    return {
+                        id: item.id,
+                        title: item.title,
+                        image_url: staticUrl + item.image
+                    }
+                })
+            })
+            console.log( {...location, items} )
+            return { ...location, items }
+        })
+    })
 
     return response.json(locations)
 })
-
-
-
 
 locationsRouter.put('/:id', upload.single('image'), async (request, response) => {
     const { id } = request.params
