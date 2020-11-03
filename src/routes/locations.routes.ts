@@ -4,6 +4,7 @@ import { celebrate, Joi } from 'celebrate'
 import knex from '../database/connection'
 import multerConfig from '../config/multer'
 import { staticUrl } from '../shared'
+import isAuthenticated from '../middlewares/isAuthenticated'
 
 const locationsRouter: Router = Router()
 const upload = multer(multerConfig)
@@ -31,6 +32,8 @@ const joiOpts = {
         escapeHtml: true  //scape HTML texts at values
     }
 }
+
+locationsRouter.use(isAuthenticated)
 
 locationsRouter.post('/', celebrate(requestRules, joiOpts), async (request, response) => {
     const {
@@ -169,26 +172,26 @@ locationsRouter.get('/', async (request, response) => {
     .distinct()
     .debug(true)
     .select('locations.*')
-    .then((locations) => { 
-        return locations.map( async (location: any) => {
-            const items = await knex('items')
-            .join('location_items', {'items.id': 'location_items.item_id'})
-            .where({'location_items.location_id': location.id})
-            .select('items.*')
-            .then((items) => { 
-                return items.map((item: any) => {
-                    return {
-                        id: item.id,
-                        title: item.title,
-                        image_url: staticUrl + item.image
-                    }
-                })
-            })
-            console.log( {...location, items} )
-            return { ...location, items }
-        })
-    })
-
+    // .then((locations) => { 
+    //     return locations.map( async (location: any) => {
+    //         const items = await knex('items')
+    //         .join('location_items', {'items.id': 'location_items.item_id'})
+    //         .where({'location_items.location_id': location.id})
+    //         .select('items.*')
+    //         .then((items) => { 
+    //             return items.map((item: any) => {
+    //                 return {
+    //                     id: item.id,
+    //                     title: item.title,
+    //                     image_url: staticUrl + item.image
+    //                 }
+    //             })
+    //         })
+    //         console.log( {...location, items} )
+    //         return { ...location, items }
+    //     })
+    // })
+    console.log( locations )
     return response.json(locations)
 })
 

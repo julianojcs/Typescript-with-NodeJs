@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import knes from '../database/connection'
 import { hash } from 'bcryptjs'
+import { jwt } from '../config';
 
 const usersRouter: Router = Router()
-const config = require('../config');
 
 usersRouter.get('/', async (request, response) => {
     const users = await knes('users').select('*')
@@ -13,7 +13,7 @@ usersRouter.get('/', async (request, response) => {
 
 usersRouter.post('/', async (request, response) => {
     const { name, email, password } = request.body
-    const passwordHashed:any = await hash(password, config.SALT_ROUNDS)
+    const passwordHashed:any = await hash(password, jwt.SALT_ROUNDS)
     const users = { 
         name, 
         email, 
