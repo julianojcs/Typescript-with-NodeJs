@@ -26,9 +26,9 @@ const requestRules = {
     })
 }
 const joiOpts = {
-    abortEarly: false,
+    abortEarly: false,  //List all error messages
     errors: {
-        escapeHtml: true
+        escapeHtml: true  //scape HTML texts at values
     }
 }
 

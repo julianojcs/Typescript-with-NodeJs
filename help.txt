@@ -49,7 +49,7 @@ Configurations Steps:
 > npm install sqlite3
 
 13) Executing Knex Migrations to create database
-> npx knex --knexfile knexfile.ts migrate:
+> npx knex --knexfile knexfile.ts migrate:latest
 
 14) Creating mew Script to run knex migrations:
     Edit package.js
@@ -81,3 +81,11 @@ Configurations Steps:
     Celebrate uses Joi -> joi.dev - Schema description language & data validator for JS
     Obs: I install only Joi, needs to install @hapi/joi:
         > npm install @hapi/joi
+
+20) installing bcryptjs to use JWT Authentication
+> npm i bcryptjs
+> npm install @types/bcryptjs -D
+
+21) installation Json Web Token
+> npm i jsonwebtoken
+> npm install @types/jsonwebtoken -D
