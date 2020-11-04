@@ -17,7 +17,7 @@ sessionsRouter.post('/', async (request, response) => {
     const comparePassword = await compare(password, user.password)
 
     if (!comparePassword) {
-        return response.status(400).json({ message: 'Credentials not found.'})
+        return response.status(400).json({ message: 'Invalid credentials.'})
     }
 
     const token = sign(

@@ -23,5 +23,5 @@ app.use('/uploads', express.static(path.resolve(__dirname, '..', 'uploads')))
 app.use(errors())
 
 app.listen(env.port, () => {
-    console.log('Server up!')
+    console.log(`Server started at port ${env.port}!`);
 })

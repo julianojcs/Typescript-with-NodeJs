@@ -19,6 +19,11 @@ export default function isAuthenticated( request: Request, response: Response, n
 
         return next()
     } catch(error) {
-        return response.status(401).json({message: 'Invalid JWT Token!'})
+        return response
+            .status(401)
+            .json({
+                message: 'Invalid JWT Token!',
+                ...error
+            })
     }
 }
