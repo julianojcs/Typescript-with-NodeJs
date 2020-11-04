@@ -48,7 +48,7 @@ locationsRouter.post('/', celebrate(requestRules, joiOpts), async (request, resp
     }: any = request.body
 
     const location: object = {
-        image: "fake-image.png",
+        image: request.file.filename,
         name,
         email,
         whatsapp,
@@ -111,10 +111,19 @@ locationsRouter.get('/:id', async (request, response) => {
     const { id } = request.params
 
     // const location = await knex('locations').where('id', id).first()
-    const location = await knex('locations').where('id', id).first().timeout(10000)
+    const location = await knex('locations')
+        .where('id', id)
+        .first()
+        .timeout(10000)
+        .then((location) => { 
+            return {
+                ...location,
+                image_url: staticUrl + location.image
+            }
+        })
 
     if (!location) {
-        return response.status(400).json({ message: `Item ${id} not found!`})
+        return response.status(400).json({ message: `Location ${id} not found!`})
     }
 
     // const items = await knex('items')
@@ -151,27 +160,41 @@ locationsRouter.get('/', async (request, response) => {
     const parsedItems: Number[] = String(items).split(',').map(item => Number(item.trim()))
 
     const locations = await knex('locations')
-    .join('location_items', 'locations.id', '=', 'location_items.location_id')
-    .where(function() {
-        if (items){    
-            this.whereIn('location_items.item_id', parsedItems)
+        .join('location_items', 'locations.id', '=', 'location_items.location_id')
+        .where(function() {
+            if (items){    
+                this.whereIn('location_items.item_id', parsedItems)
+            }
+        })
+        .where(function() {
+            if (city && uf) {
+                this.where({
+                    city: String(city),
+                    uf:  String(uf)
+                })
+            } else if (city && !uf) {
+                this.where({city: String(city)})
+            } else if (!city && uf) {
+                this.where({uf: String(uf)})
+            }
+        })
+        .distinct()
+        .debug(true)
+        .select('locations.*')
+
+    for (let i:number=0; i<locations.length; i++){
+        const itemsDB = await knex('items')
+            .join('location_items', {'items.id': 'location_items.item_id'})
+            .where({'location_items.location_id': locations[i].id})
+            .select('items.*')
+        locations[i] = {
+            ...locations[i],
+            itemsDB
         }
-    })
-    .where(function() {
-        if (city && uf) {
-            this.where({
-                city: String(city),
-                uf:  String(uf)
-            })
-        } else if (city && !uf) {
-            this.where({city: String(city)})
-        } else if (!city && uf) {
-            this.where({uf: String(uf)})
-        }
-    })
-    .distinct()
-    .debug(true)
-    .select('locations.*')
+    }
+    // .distinct()
+    // .debug(true)
+    // .select('locations.*')
     // .then((locations) => { 
     //     return locations.map( async (location: any) => {
     //         const items = await knex('items')
@@ -191,6 +214,7 @@ locationsRouter.get('/', async (request, response) => {
     //         return { ...location, items }
     //     })
     // })
+    
     console.log( locations )
     return response.json(locations)
 })
